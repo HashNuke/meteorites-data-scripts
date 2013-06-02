@@ -10,8 +10,11 @@ task :geocode do
     #NOTE We don't want to hit the geonames's 2k/hour request limit. So safely use 1900
     contents.each_slice(1900).with_index do |batch, index|
       batch.each do |row|
-        #NOTE Skip the header row. we know the name of the first column
-        next if row[0] == "name"
+        #NOTE If header row, just add and skip
+        if row[0] == "name"
+          csv << (row + ["country_code"])
+          next
+        end
 
         begin
           params = {params: { lat: row[6], lng: row[7], username: usernames[index]}}
